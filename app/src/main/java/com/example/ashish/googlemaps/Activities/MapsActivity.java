@@ -1,11 +1,15 @@
-package com.example.ashish.googlemaps;
+package com.example.ashish.googlemaps.Activities;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
+import com.example.ashish.googlemaps.Models.DeliveryBoyModel;
+import com.example.ashish.googlemaps.R;
 import com.google.android.gms.location.LocationListener;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -43,8 +47,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+    SharedPreferences sharedPreferences;
     MarkerOptions markerOptions, markerOptions2, markerOptions3;
     List<DeliveryBoyModel> deliveryBoys = new ArrayList<>();
+    String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
+        }
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(getIntent().getExtras() != null){
+            date = getIntent().getStringExtra("date");
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -91,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
+                mMap.setOnMarkerClickListener(this);
 
 
             }
@@ -115,26 +126,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerOptions.position(latLngMarker);
             markerOptions.title(deliveryBoys.get(i).getName()+"(Status:"+ deliveryBoys.get(i).getStatus()+ ")");
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
-            mMap.addMarker(markerOptions);
+            Marker marker = mMap.addMarker(markerOptions);
+            marker.setTag(i);
         }
-        /*LatLng latLngMarker = new LatLng(28.4440583, 77.0467073);
-         markerOptions = new MarkerOptions();
-        markerOptions.position(latLngMarker);
-        markerOptions.title("Amit Kumar(Status: Assigned)");
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
-        mMap.addMarker(markerOptions);
-        final LatLng latLngMarker2 = new LatLng(28.4460579, 77.0513358);
-         markerOptions2 = new MarkerOptions();
-        markerOptions2.position(latLngMarker2);
-        markerOptions2.title("Vinay Gupta(Status: Out for delivery)");
-        markerOptions2.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
-        mMap.addMarker(markerOptions2);
-        final LatLng latLngMarker3 = new LatLng(28.4436641, 77.0417706);
-         markerOptions3 = new MarkerOptions();
-        markerOptions3.position(latLngMarker3);
-        markerOptions3.title("Ashish Gupta(Status: Not Assigned)");
-        markerOptions3.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
-        mMap.addMarker(markerOptions3);*/
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -180,7 +174,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //mCurrLocationMarker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
         //stop location updates
         if (mGoogleApiClient != null) {
@@ -265,12 +259,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if(marker.equals(markerOptions)){
-            Toast.makeText(getApplicationContext(),"Marker1",Toast.LENGTH_SHORT).show();
-        }
-        else if(marker.equals(markerOptions2)){
-            Toast.makeText(getApplicationContext(),"Marker2",Toast.LENGTH_SHORT).show();
-        }
-        return true;
+        Integer tag = (Integer) marker.getTag();
+        Toast.makeText(getApplicationContext(),"Marker" + tag + " " + date,Toast.LENGTH_SHORT).show();
+        sharedPreferences.edit().putInt("assigned_to",tag).apply();
+
+        return false;
     }
 }

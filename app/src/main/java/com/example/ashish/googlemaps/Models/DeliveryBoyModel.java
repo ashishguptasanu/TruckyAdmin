@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps;
+package com.example.ashish.googlemaps.Models;
 
 /**
  * Created by Ashish on 31-08-2017.
