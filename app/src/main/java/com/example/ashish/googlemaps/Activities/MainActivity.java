@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ashish.googlemaps.Fragments.ItemOneFragment;
 import com.example.ashish.googlemaps.Fragments.ItemThreeFragment;
@@ -18,9 +19,6 @@ import com.example.ashish.googlemaps.Fragments.ItemTwoFragment;
 import com.example.ashish.googlemaps.R;
 
 public class MainActivity extends AppCompatActivity {
-
-    private TextView mTextMessage;
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
         Fragment selectedFragment = null;
@@ -54,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, ItemOneFragment.newInstance());
         transaction.commit();
+        if(getIntent().getExtras() != null){
+            Toast.makeText(getApplicationContext(), getIntent().getStringExtra("assigned_to"),Toast.LENGTH_SHORT).show();
+        }
         FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

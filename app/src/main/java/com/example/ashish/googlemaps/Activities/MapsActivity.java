@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-
 import com.example.ashish.googlemaps.Models.DeliveryBoyModel;
 import com.example.ashish.googlemaps.R;
 import com.google.android.gms.location.LocationListener;
@@ -17,7 +16,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -31,10 +29,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.example.ashish.googlemaps.R.id.map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -48,17 +44,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
     SharedPreferences sharedPreferences;
-    MarkerOptions markerOptions, markerOptions2, markerOptions3;
+    MarkerOptions markerOptions, markerOptions2;
     List<DeliveryBoyModel> deliveryBoys = new ArrayList<>();
     String date;
-    int clickCount = 0;
+    double lat1, lang1, lat2, lang2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
+            Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -66,34 +62,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(getIntent().getExtras() != null){
-            date = getIntent().getStringExtra("date");
+            lat1 = getIntent().getDoubleExtra("lat1",0.0);
+            lat2 = getIntent().getDoubleExtra("lat2",0.0);
+            lang1 = getIntent().getDoubleExtra("lang1",0.0);
+            lang2= getIntent().getDoubleExtra("lang2",0.0);
         }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        /*boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources()
-                .getString(R.string.map_style_json)));
-        mMap = googleMap;
-        if (!success) {
-            Log.e("Style", "Style parsing failed.");
-        }*/
-
-        // Add a marker in Sydney and move the camera
         mMap = googleMap;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,R.raw.style_map));
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -111,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-        DeliveryBoyModel deliveryBoyModel = new DeliveryBoyModel("Ashish","Assigned",28.4540583,77.0937073);
+        /*DeliveryBoyModel deliveryBoyModel = new DeliveryBoyModel("Ashish","Assigned",28.4540583,77.0937073);
         DeliveryBoyModel deliveryBoyModel1 = new DeliveryBoyModel("Vinay","Not Assigned",28.4941690,77.6427130);
         DeliveryBoyModel deliveryBoyModel2 = new DeliveryBoyModel("Deepak","Not Assigned",28.4342510,77.3237180);
         DeliveryBoyModel deliveryBoyModel3 = new DeliveryBoyModel("Akash","Out for delivery",28.4043182,77.9747654);
@@ -129,7 +111,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
             Marker marker = mMap.addMarker(markerOptions);
             marker.setTag(i);
-        }
+            marker.setDraggable(true);
+        }*/
+        LatLng latLngMarker = new LatLng(lat1, lang1);
+        markerOptions = new MarkerOptions();
+        markerOptions.position(latLngMarker);
+        markerOptions.title("Delivery Boy");
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
+        mMap.addMarker(markerOptions);
+
+        LatLng latLngMarker2 = new LatLng(lat2, lang2);
+        markerOptions2 = new MarkerOptions();
+        markerOptions2.position(latLngMarker2);
+        markerOptions2.title("Drop Location");
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.location));
+        mMap.addMarker(markerOptions2);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -169,15 +165,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-
-        //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        //mCurrLocationMarker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
-
-        //stop location updates
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -259,6 +249,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Integer tag = (Integer) marker.getTag();
         Toast.makeText(getApplicationContext(),"Marker" + tag + " " + date,Toast.LENGTH_SHORT).show();
         sharedPreferences.edit().putInt("assigned_to",tag).apply();
+        /*Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        intent.putExtra("assigned_to",deliveryBoys.get(tag).getName());
+        startActivity(intent);*/
 
         return false;
     }
