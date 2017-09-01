@@ -16,10 +16,6 @@ import com.example.ashish.googlemaps.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Ashish on 01-09-2017.
- */
-
 public class NewTaskAdapter extends RecyclerView.Adapter<NewTaskAdapter.MyViewHolder>{
     private List<Task> taskList = new ArrayList<>();
     private Context context;
