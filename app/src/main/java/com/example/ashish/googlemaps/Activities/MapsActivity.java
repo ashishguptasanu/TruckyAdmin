@@ -51,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     MarkerOptions markerOptions, markerOptions2, markerOptions3;
     List<DeliveryBoyModel> deliveryBoys = new ArrayList<>();
     String date;
+    int clickCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,14 +247,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 } else {
 
-                    // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
-
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
         }
     }
 
