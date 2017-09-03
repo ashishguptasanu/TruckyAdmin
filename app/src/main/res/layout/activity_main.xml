@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
+            android:visibility="gone"
             android:src="@drawable/map"
             android:id="@+id/fab"
             android:layout_margin="16dp" />
@@ -27,8 +28,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        app:itemTextColor="#c0c0c0"
         app:itemIconTint="@drawable/navigation_selector"
-        android:background="?android:attr/windowBackground"
+        android:background="@color/colorPrimary"
         app:menu="@menu/navigation"/>
 
 

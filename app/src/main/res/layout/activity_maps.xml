@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        app:cardBackgroundColor="#1e88e5"
+        app:cardBackgroundColor="@color/colorPrimary"
         app:cardElevation="5dp"
         app:cardCornerRadius="0dp"
         android:alpha="1">
