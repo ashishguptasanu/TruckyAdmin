@@ -35,8 +35,7 @@
 
         <activity
             android:name=".Activities.MapsActivity"
-            android:label="@string/title_activity_maps">
-        </activity>
+            android:label="@string/title_activity_maps"></activity>
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main">
@@ -46,6 +45,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activities.AssignTask"
+            android:label="@string/title_activity_assign_task"></activity>
     </application>
 
 </manifest>

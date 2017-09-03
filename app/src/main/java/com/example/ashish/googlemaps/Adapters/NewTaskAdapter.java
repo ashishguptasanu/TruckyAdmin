@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.ashish.googlemaps.Activities.MapsActivity;
+import com.example.ashish.googlemaps.Activities.AssignTask;
 import com.example.ashish.googlemaps.Models.Task;
 import com.example.ashish.googlemaps.R;
 
@@ -38,8 +38,8 @@ public class NewTaskAdapter extends RecyclerView.Adapter<NewTaskAdapter.MyViewHo
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(context, MapsActivity.class);
-            intent.putExtra("date",taskList.get(getAdapterPosition()).deliveryDate);
+            Intent intent = new Intent(context, AssignTask.class);
+            intent.putExtra("pickup",taskList.get(getAdapterPosition()).deliveryDate);
             context.startActivity(intent);
         }
     }

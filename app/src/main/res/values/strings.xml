@@ -5,4 +5,5 @@
     <string name="title_home">New</string>
     <string name="title_dashboard">In Progress</string>
     <string name="title_notifications">Completed</string>
+    <string name="title_activity_assign_task">Assign Task</string>
 </resources>

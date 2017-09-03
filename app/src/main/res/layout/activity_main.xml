@@ -28,9 +28,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:itemTextColor="#c0c0c0"
+        app:itemTextColor="#fff"
         app:itemIconTint="@drawable/navigation_selector"
-        android:background="@color/colorPrimary"
+        android:background="#bdbdbd"
         app:menu="@menu/navigation"/>
 
 
