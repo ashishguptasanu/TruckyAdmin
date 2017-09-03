@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+
+import com.cs.googlemaproute.DrawRoute;
 import com.example.ashish.googlemaps.Models.DeliveryBoyModel;
 import com.example.ashish.googlemaps.R;
 import com.google.android.gms.location.LocationListener;
@@ -13,8 +15,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -29,6 +33,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import static com.example.ashish.googlemaps.R.id.map;
@@ -36,7 +45,7 @@ import static com.example.ashish.googlemaps.R.id.map;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, DrawRoute.onDrawRoute{
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -48,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<DeliveryBoyModel> deliveryBoys = new ArrayList<>();
     String date;
     double lat1, lang1, lat2, lang2;
+    TextView tvTimeDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        tvTimeDistance = (TextView)findViewById(R.id.tv_time_distance);
     }
 
 
@@ -126,6 +137,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions2.title("Drop Location");
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.location));
         mMap.addMarker(markerOptions2);
+        DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(lat1,lang1)
+                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).setZoomLevel((float) 10.0).run();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -166,17 +179,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat1, lang1)));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
     }
-
-
-
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
@@ -254,5 +263,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(intent);*/
 
         return false;
+    }
+
+    @Override
+    public void afterDraw(String result) {
+            Log.d("Result", result);
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray routes = jsonObject.getJSONArray("routes");
+            JSONArray legs = routes.getJSONObject(0).getJSONArray("legs");
+            JSONObject duration = legs.getJSONObject(0).getJSONObject("duration");
+            String MDuration = duration.getString("text");
+            JSONObject distance = legs.getJSONObject(0).getJSONObject("distance");
+            String mDistance = distance.getString("text");
+            /*JSONObject duration = legs.getJSONObject(2);
+            String mDuration = duration.getString("text");*/
+            Log.d("Duration", MDuration);
+            tvTimeDistance.setText("("+ mDistance + ") " + MDuration);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
