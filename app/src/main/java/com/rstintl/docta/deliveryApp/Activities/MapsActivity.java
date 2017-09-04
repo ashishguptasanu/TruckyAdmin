@@ -1,21 +1,34 @@
 package com.rstintl.docta.deliveryApp.Activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
 import com.cs.googlemaproute.DrawRoute;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rstintl.docta.deliveryApp.Models.DeliveryBoyModel;
 import com.rstintl.docta.deliveryApp.R;
 import com.google.android.gms.location.LocationListener;
+
+import android.location.LocationManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -60,6 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double lat1, lang1, lat2, lang2;
     TextView tvTimeDistance;
     String finalDuration, finalDistance;
+    DatabaseReference myRef;
+    FirebaseDatabase database;
+    FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +87,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+         database = FirebaseDatabase.getInstance();
+         myRef = database.getReference("location");
+        fab = (FloatingActionButton)findViewById(R.id.fab);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(getIntent().getExtras() != null){
             lat1 = getIntent().getDoubleExtra("lat1",0.0);
@@ -82,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
         tvTimeDistance = (TextView)findViewById(R.id.tv_time_distance);
+
     }
 
 
@@ -140,6 +160,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(markerOptions2);
         DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(lat1,lang1)
                 .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).setZoomLevel((float) 10.0).run();
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -158,10 +179,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            Log.d("Hi","Started");
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
 
@@ -173,19 +195,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-
+    public void onLocationChanged(final Location location) {
+        Toast.makeText(getApplicationContext(), location.getLatitude()+" "+ location.getLongitude(),Toast.LENGTH_SHORT).show();
+        Log.d("latlang", String.valueOf(location.getLatitude() + location.getLongitude()));
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
+        myRef.child("6a3f628a3cdf0504").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                   myRef.child("user").child("6a3f628a3cdf0504").child("lat").setValue(location.getLatitude());
+                    myRef.child("user").child("6a3f628a3cdf0504").child("lang").setValue(location.getLongitude());
+                    // TODO: handle the case where the data already exists
+                }
+                else {
+                    writeNewUser("Ashish Gupta", "Assigned", location.getLatitude(), location.getLongitude());
+                    // TODO: handle the case where the data does not yet exist
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+        Log.d("Location",location.getLatitude()+" "+ location.getLongitude());
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat1, lang1)));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat1, lang1)));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+            }
+        });
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(new LatLng(lat1,lang1));
+        builder.include(new LatLng(lat2,lang2));
+        LatLngBounds bounds = builder.build();
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,30);
+        mMap.animateCamera(cu, new GoogleMap.CancelableCallback(){
+            public void onCancel(){}
+            public void onFinish(){
+                CameraUpdate zout = CameraUpdateFactory.zoomBy((float) -0.0);
+                mMap.animateCamera(zout);
+            }
+        });
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
+    }
+    private void writeNewUser(String name, String status, double lat, double lang) {
+        DeliveryBoyModel deliveryBoy = new DeliveryBoyModel(name, status,lat,lang);
+
+        myRef.child("users").child(Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID)).setValue(deliveryBoy);
     }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
