@@ -2,9 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
+    <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Choose Pickup Point"
+    android:textSize="15sp"
+    android:id="@+id/tv_pickup"
+    android:gravity="center"
+    android:layout_marginTop="15dp"/>
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content"
+        android:text="Choose Dropoff Point"
+        android:textSize="15sp"
+        android:id="@+id/tv_Dropoff"
+        android:gravity="center"
+        android:layout_marginTop="50dp"/>
 </LinearLayout>
