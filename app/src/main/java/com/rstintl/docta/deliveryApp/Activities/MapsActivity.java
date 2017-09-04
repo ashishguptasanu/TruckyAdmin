@@ -336,6 +336,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void afterDraw(String result) {
             Log.d("Result", result);
+
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray routes = jsonObject.getJSONArray("routes");
