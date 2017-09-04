@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "490305772000",
+    "firebase_url": "https://map-project-c37e5.firebaseio.com",
+    "project_id": "map-project-c37e5",
+    "storage_bucket": "map-project-c37e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490305772000:android:d3a280a6610c93c2",
+        "android_client_info": {
+          "package_name": "com.rstintl.docta.deliveryApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "490305772000-6lbp9jiqniv6t99avj40k2ri6s6pt9mh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrX-sspp0PwgUF5NlT_8y6AFopwD1k0n8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps;
+package com.rstintl.docta.deliveryApp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

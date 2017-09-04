@@ -22,6 +22,7 @@
             <android.support.v7.widget.AppCompatSpinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/spinner_city"
                 android:layout_marginBottom="10dp">
             </android.support.v7.widget.AppCompatSpinner>
             <View
@@ -47,6 +48,7 @@
             <android.support.v7.widget.AppCompatSpinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/spinner_area"
                 android:layout_marginBottom="10dp">
             </android.support.v7.widget.AppCompatSpinner>
             <View
@@ -72,6 +74,7 @@
             <android.support.v7.widget.AppCompatSpinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/spinner_delivery_agent"
                 android:layout_marginBottom="10dp">
             </android.support.v7.widget.AppCompatSpinner>
             <View

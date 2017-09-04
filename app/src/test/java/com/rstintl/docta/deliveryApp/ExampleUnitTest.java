@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps;
+package com.rstintl.docta.deliveryApp;
 
 import org.junit.Test;
 

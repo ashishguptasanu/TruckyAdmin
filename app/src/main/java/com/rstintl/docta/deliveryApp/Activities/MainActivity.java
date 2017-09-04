@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Activities;
+package com.rstintl.docta.deliveryApp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,13 +10,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ashish.googlemaps.Fragments.ItemOneFragment;
-import com.example.ashish.googlemaps.Fragments.ItemThreeFragment;
-import com.example.ashish.googlemaps.Fragments.ItemTwoFragment;
-import com.example.ashish.googlemaps.R;
+import com.rstintl.docta.deliveryApp.Fragments.ItemOneFragment;
+import com.rstintl.docta.deliveryApp.Fragments.ItemThreeFragment;
+import com.rstintl.docta.deliveryApp.Fragments.ItemTwoFragment;
+import com.rstintl.docta.deliveryApp.R;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

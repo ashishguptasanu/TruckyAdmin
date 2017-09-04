@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Fragments;
+package com.rstintl.docta.deliveryApp.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.ashish.googlemaps.Adapters.DeliveryAdapter;
-import com.example.ashish.googlemaps.Adapters.NewTaskAdapter;
-import com.example.ashish.googlemaps.Models.InProgress;
-import com.example.ashish.googlemaps.Models.Task;
-import com.example.ashish.googlemaps.R;
+import com.rstintl.docta.deliveryApp.Adapters.DeliveryAdapter;
+import com.rstintl.docta.deliveryApp.Models.InProgress;
+import com.rstintl.docta.deliveryApp.R;
 
 import java.util.ArrayList;
 import java.util.List;

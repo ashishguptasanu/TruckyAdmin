@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Fragments;
+package com.rstintl.docta.deliveryApp.Fragments;
 
 
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.ashish.googlemaps.R;
+import com.rstintl.docta.deliveryApp.R;
 
 /**
  * Created by Ashish on 31-08-2017.

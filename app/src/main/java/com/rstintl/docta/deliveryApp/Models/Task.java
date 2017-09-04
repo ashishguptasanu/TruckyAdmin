@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Models;
+package com.rstintl.docta.deliveryApp.Models;
 
 /**
  * Created by Ashish on 01-09-2017.

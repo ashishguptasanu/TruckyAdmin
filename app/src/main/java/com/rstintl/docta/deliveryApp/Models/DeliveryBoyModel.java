@@ -1,8 +1,4 @@
-package com.example.ashish.googlemaps.Models;
-
-/**
- * Created by Ashish on 31-08-2017.
- */
+package com.rstintl.docta.deliveryApp.Models;
 
 public class DeliveryBoyModel {
     String name;

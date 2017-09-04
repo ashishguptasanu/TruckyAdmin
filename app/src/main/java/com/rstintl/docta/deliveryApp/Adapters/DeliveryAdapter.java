@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Adapters;
+package com.rstintl.docta.deliveryApp.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.ashish.googlemaps.Activities.MapsActivity;
-import com.example.ashish.googlemaps.Models.InProgress;
-import com.example.ashish.googlemaps.Models.Task;
-import com.example.ashish.googlemaps.R;
+import com.rstintl.docta.deliveryApp.Activities.MapsActivity;
+import com.rstintl.docta.deliveryApp.Models.InProgress;
+import com.rstintl.docta.deliveryApp.R;
 
 import java.util.ArrayList;
 import java.util.List;

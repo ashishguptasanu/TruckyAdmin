@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ashish.googlemaps">
+    package="com.rstintl.docta.deliveryApp">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -34,10 +34,10 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Activities.MapsActivity"
+            android:name="com.rstintl.docta.deliveryApp.Activities.MapsActivity"
             android:label="@string/title_activity_maps"></activity>
         <activity
-            android:name=".Activities.MainActivity"
+            android:name="com.rstintl.docta.deliveryApp.Activities.MainActivity"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.AssignTask"
+            android:name="com.rstintl.docta.deliveryApp.Activities.AssignTask"
             android:label="@string/title_activity_assign_task"></activity>
     </application>
 

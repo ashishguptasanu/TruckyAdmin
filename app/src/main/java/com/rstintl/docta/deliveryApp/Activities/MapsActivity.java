@@ -1,4 +1,4 @@
-package com.example.ashish.googlemaps.Activities;
+package com.rstintl.docta.deliveryApp.Activities;
 
 import android.Manifest;
 import android.content.SharedPreferences;
@@ -6,8 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 
 import com.cs.googlemaproute.DrawRoute;
-import com.example.ashish.googlemaps.Models.DeliveryBoyModel;
-import com.example.ashish.googlemaps.R;
+import com.rstintl.docta.deliveryApp.Models.DeliveryBoyModel;
+import com.rstintl.docta.deliveryApp.R;
 import com.google.android.gms.location.LocationListener;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -40,7 +40,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.example.ashish.googlemaps.R.id.map;
+
+import static com.rstintl.docta.deliveryApp.R.id.map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -58,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String date;
     double lat1, lang1, lat2, lang2;
     TextView tvTimeDistance;
-
+    String finalDuration, finalDistance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,7 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat1, lang1)));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -255,9 +256,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Integer tag = (Integer) marker.getTag();
-        Toast.makeText(getApplicationContext(),"Marker" + tag + " " + date,Toast.LENGTH_SHORT).show();
-        sharedPreferences.edit().putInt("assigned_to",tag).apply();
         /*Intent intent = new Intent(getApplicationContext(),MainActivity.class);
         intent.putExtra("assigned_to",deliveryBoys.get(tag).getName());
         startActivity(intent);*/
@@ -273,15 +271,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             JSONArray routes = jsonObject.getJSONArray("routes");
             JSONArray legs = routes.getJSONObject(0).getJSONArray("legs");
             JSONObject duration = legs.getJSONObject(0).getJSONObject("duration");
-            String MDuration = duration.getString("text");
+            finalDuration = duration.getString("text");
             JSONObject distance = legs.getJSONObject(0).getJSONObject("distance");
-            String mDistance = distance.getString("text");
+            finalDistance = distance.getString("text");
             /*JSONObject duration = legs.getJSONObject(2);
             String mDuration = duration.getString("text");*/
-            Log.d("Duration", MDuration);
-            tvTimeDistance.setText("("+ mDistance + ") " + MDuration);
+            Log.d("Duration", finalDuration);
+            tvTimeDistance.setText("("+ finalDistance + ") " + finalDuration);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+
+
 }
