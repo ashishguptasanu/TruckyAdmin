@@ -30,12 +30,11 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
-
         <activity
-            android:name="com.rstintl.docta.deliveryApp.Activities.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:name=".Activities.MapsActivity"
+            android:label="@string/title_activity_maps" />
         <activity
-            android:name="com.rstintl.docta.deliveryApp.Activities.MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,11 +43,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.rstintl.docta.deliveryApp.Activities.AssignTask"
-            android:label="@string/title_activity_assign_task"></activity>
+            android:name=".Activities.AssignTask"
+            android:label="@string/title_activity_assign_task" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".Activities.ManageActivity"
+            android:label="@string/title_activity_manage"
+            android:parentActivityName=".Activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
