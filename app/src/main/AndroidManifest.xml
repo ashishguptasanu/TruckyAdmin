@@ -56,6 +56,10 @@
             android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".Activities.AddDriver"
+            android:parentActivityName=".Activities.ManageActivity"
+            android:label="Add New Driver">
+        </activity>
     </application>
 
 </manifest>
