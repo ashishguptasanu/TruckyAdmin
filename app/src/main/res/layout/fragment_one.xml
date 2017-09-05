@@ -3,10 +3,25 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Assign New Task"
+        android:textSize="20dp"
+        android:textStyle="normal"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"/>
+    <ernestoyaquello.com.verticalstepperform.VerticalStepperFormLayout
+        android:id="@+id/vertical_stepper_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"/>
+    <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Choose Pickup Point"
     android:textSize="15sp"
+        android:visibility="gone"
     android:id="@+id/tv_pickup"
     android:gravity="center"
     android:layout_marginTop="15dp"/>
@@ -15,7 +30,30 @@
         android:layout_height="wrap_content"
         android:text="Choose Dropoff Point"
         android:textSize="15sp"
+        android:visibility="gone"
         android:id="@+id/tv_Dropoff"
         android:gravity="center"
         android:layout_marginTop="50dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:id="@+id/tv_start_date"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start Date &amp; Time"/>
+        <TextView
+            android:layout_width="0dp"
+            android:id="@+id/tv_end_date"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="End Date &amp; Time"/>
+    </LinearLayout>
 </LinearLayout>

@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Google Maps</string>
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_main">Tasks</string>
-    <string name="title_home">New</string>
+    <string name="title_activity_main">DashBoard</string>
+    <string name="title_home">Assign Task</string>
     <string name="title_dashboard">In Progress</string>
     <string name="title_notifications">Completed</string>
     <string name="title_activity_assign_task">Assign Task</string>
