@@ -18,6 +18,7 @@ public class ManageActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.back_button);
         setSupportActionBar(toolbar);
         cardViewAddDriver = (CardView)findViewById(R.id.card_add_driver);
         cardViewAddDriver.setOnClickListener(this);
@@ -25,8 +26,8 @@ public class ManageActivity extends AppCompatActivity implements View.OnClickLis
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), AllDriverActivity.class);
+                startActivity(intent);
             }
         });
     }

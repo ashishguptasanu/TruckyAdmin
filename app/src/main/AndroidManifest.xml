@@ -54,12 +54,14 @@
             android:name=".Activities.ManageActivity"
             android:label="@string/title_activity_manage"
             android:parentActivityName=".Activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".Activities.AddDriver"
-            android:parentActivityName=".Activities.ManageActivity"
-            android:label="Add New Driver">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".Activities.AddDriver"
+            android:label="Add New Driver"
+            android:parentActivityName=".Activities.ManageActivity"></activity>
+        <activity
+            android:name=".Activities.AllDriverActivity"
+            android:label="@string/title_activity_all_driver"></activity>
     </application>
 
 </manifest>
