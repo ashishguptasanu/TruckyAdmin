@@ -40,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -73,11 +74,12 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     TextView tvPickUp, tvDropOff, tvStartDate, tvEndDate;
     int PLACE_PICKER_REQUEST = 1;
     int PLACE_PICKER_REQUEST2 = 2;
-    String startHour, startMinute;
+    String startHour, startMinute, startTimeStamp, endTimestamp;
     Spinner vehicleType, deliveryAgent;
     List<DriverInfo> driverDetails = new ArrayList<>();
     List<String> driverData = new ArrayList<>();
     ArrayAdapter<String> agentDataAdapter;
+
     String[] vehicleTypeData = new String[]{"Select One","Motorcycle", "Light Motor Vehicle", "Heavy Truck", "Mini Bus","Heavy Bus","Fork Lift","Shovel"};
     EditText pickUp, dropOff, startDateTime, endDateTime, deliverToName, deliverToContact, deliverToAdditionalDetails;
     private VerticalStepperFormLayout verticalStepperForm;
@@ -229,12 +231,12 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         }
     }
 
-    private void dateTimePicker(final EditText edtDate1) {
+    private String dateTimePicker(final EditText edtDate1) {
         Calendar mcurrentDate=Calendar.getInstance();
         final int mYear = mcurrentDate.get(Calendar.YEAR);
         int mMonth=mcurrentDate.get(Calendar.MONTH);
         int mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
-
+        final String[] timeStamp = {""};
         DatePickerDialog mDatePicker=new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, final int selectedyear, final int selectedmonth, final int selectedday) {
                 final String[] selectedHourFinal = new String[1];
@@ -246,7 +248,6 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                 mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        Log.d("Time",selectedHour + ":"+ selectedMinute);
                         if(selectedHour < 10){
                             selectedHourFinal[0] = "0"+ selectedHour;
                         }
@@ -261,6 +262,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                         }
                         startHour = selectedHourFinal[0];
                         startMinute = selectedMinuteFinal[0];
+                        timeStamp[0] = String.valueOf(new SimpleDateFormat(selectedyear +"-"+selectedmonth+"-"+selectedday+"'T'"+startHour+":"+startMinute+":00'Z'"));
+                        Log.d("TimeStamp",timeStamp[0]);
                         edtDate1.setText((selectedyear +"-"+(selectedmonth+1)+"-"+selectedday) + " " +  startHour + ":" + startMinute);
                     }
                 }, hour, minute, false);
@@ -272,6 +275,7 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         //mDatePicker.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mDatePicker.setTitle("Select Start Date");
         mDatePicker.show();
+        return timeStamp[0];
     }
 
     @Override
@@ -347,7 +351,7 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         endDateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dateTimePicker(endDateTime);
+                endTimestamp = dateTimePicker(endDateTime);
             }
         });
 
@@ -362,7 +366,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         startDateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dateTimePicker(startDateTime);
+                startTimeStamp = dateTimePicker(startDateTime);
+                Log.d("Start TimeStamp", startTimeStamp);
             }
         });
 
@@ -496,6 +501,56 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
 
     @Override
     public void sendData() {
+        /*final ProgressDialog progressDialog = ProgressDialog.show(this, "Adding New Driver", "Please wait while we are adding a new profile to our database");
+        progressDialog.show();*/
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("task_pickup_address", pickUp.getText().toString())
+                .addFormDataPart("task_pickup_latitude", "")
+                .addFormDataPart("task_pickup_longitude", "")
+                .addFormDataPart("task_dropoff_address", dropOff.getText().toString())
+                .addFormDataPart("task_dropoff_latitude", "")
+                .addFormDataPart("task_dropoff_longitude", "")
+                .addFormDataPart("task_start_datetime", startDateTime.getText().toString())
+                .addFormDataPart("task_start_timestamp", "")
+                .addFormDataPart("task_end_datetime", endDateTime.getText().toString())
+                .addFormDataPart("task_end_timestamp", "")
+                .addFormDataPart("task_delivery_person_name", deliverToName.getText().toString())
+                .addFormDataPart("task_delivery_person_contact", deliverToContact.getText().toString())
+                .addFormDataPart("task_delivery_person_address", deliverToAdditionalDetails.getText().toString())
+                .addFormDataPart("task_vehicle_type", "")
+                .addFormDataPart("task_driver_id", "")
+                .build();
+        Request request = new Request.Builder().url(getResources().getString(R.string.base_url)+"/trucky/task/assign").addHeader("token","d75542712c868c1690110db641ba01a").post(requestBody).build();
+        okhttp3.Call call = client.newCall(request);
+        call.enqueue(new Callback() {
 
+
+            public static final String MODE_PRIVATE = "";
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Registration Error" + e.getMessage());
+                /*showToast("Failed");
+                progressDialog.dismiss();*/
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+
+                try {
+                    String resp = response.body().string();
+                    /*progressDialog.dismiss();
+                    showToast("Success");*/
+                    Log.d("response",resp);
+                } catch (IOException e) {
+                   /* progressDialog.dismiss();
+                    showToast("Failed");*/
+                    // Log.e(TAG_REGISTER, "Exception caught: ", e);
+                    System.out.println("Exception caught" + e.getMessage());
+                }
+            }
+
+        });
     }
 }
