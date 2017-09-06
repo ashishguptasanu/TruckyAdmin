@@ -203,28 +203,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-        myRef.child("6a3f628a3cdf0504").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                   myRef.child("user").child("6a3f628a3cdf0504").child("lat").setValue(location.getLatitude());
-                    myRef.child("user").child("6a3f628a3cdf0504").child("lang").setValue(location.getLongitude());
-                    // TODO: handle the case where the data already exists
-                }
-                else {
-                    writeNewUser("Ashish Gupta", "Assigned", location.getLatitude(), location.getLongitude());
-                    // TODO: handle the case where the data does not yet exist
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
-
-        Log.d("Location",location.getLatitude()+" "+ location.getLongitude());
+        //Log.d("Location",location.getLatitude()+" "+ location.getLongitude());
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,7 +228,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
     }
