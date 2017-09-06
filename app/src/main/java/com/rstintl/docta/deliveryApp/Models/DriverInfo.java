@@ -107,8 +107,10 @@ public class DriverInfo {
     public void setDriverAdded(String driverAdded) {
         this.driverAdded = driverAdded;
     }
-    public DriverInfo(String driverId, String driverName){
+    public DriverInfo(String driverId, String driverName, String vehicleType){
         this.driverId = driverId;
         this.driverName = driverName;
+        this.driverVehicleType = vehicleType;
     }
+
 }

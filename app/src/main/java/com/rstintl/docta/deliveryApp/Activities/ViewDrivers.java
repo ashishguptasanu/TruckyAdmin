@@ -3,11 +3,22 @@ package com.rstintl.docta.deliveryApp.Activities;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.rstintl.docta.deliveryApp.Adapters.DeliveryAdapter;
+import com.rstintl.docta.deliveryApp.Adapters.DriverAdapter;
+import com.rstintl.docta.deliveryApp.Models.DriverInfo;
 import com.rstintl.docta.deliveryApp.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -17,12 +28,21 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class ViewDrivers extends AppCompatActivity {
+    List<DriverInfo> driverList = new ArrayList<>();
+    List<String> driverData = new ArrayList<>();
     OkHttpClient client = new OkHttpClient();
+    DriverAdapter driverAdapter;
+    RecyclerView recyclerView;
+    LinearLayoutManager linearLayoutManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_drivers);
         getDriverList();
+        recyclerView = (RecyclerView)findViewById(R.id.recycler);
+        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
     }
     private void getDriverList(){
         /*final ProgressDialog progressDialog = ProgressDialog.show(this, "Adding New Driver", "Please wait while we are adding a new profile to our database");
@@ -50,6 +70,35 @@ public class ViewDrivers extends AppCompatActivity {
 
                 try {
                     String resp = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(resp);
+                        JSONObject jsonResponse = jsonObject.getJSONObject("Response");
+                        JSONObject dataObject = jsonResponse.getJSONObject("data");
+                        JSONArray dataArray = dataObject.getJSONArray("driver_list");
+                        for(int i=0; i< dataArray.length();i++){
+                            JSONObject jsonObject1 = dataArray.getJSONObject(i);
+                            String driverName = jsonObject1.getString("driver_name");
+                            String driverId = jsonObject1.getString("driver_id");
+                            String driverVehicleType = jsonObject1.getString("driver_vehicle_type");
+                            DriverInfo driverInfo = new DriverInfo(driverId, driverName, driverVehicleType);
+                            driverList.add(driverInfo);
+                        }
+                        for(int k=0; k<driverList.size();k++){
+                            driverData.add(driverList.get(k).getDriverName());
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                driverAdapter = new DriverAdapter(getApplicationContext(), driverList);
+                                recyclerView.setAdapter(driverAdapter);
+                            }
+                        });
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     /*progressDialog.dismiss();
                     showToast("Success");*/
                     Log.d("response",resp);

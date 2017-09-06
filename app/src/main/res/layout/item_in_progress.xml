@@ -3,109 +3,127 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="8dp"
-    app:cardElevation="2dp">
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    app:cardCornerRadius="2dp"
+    android:elevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Assigned To:  "
-                android:textColor="@color/black"
-                android:textSize="14sp" />
-
-            <TextView
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="Amit Kumar"
-                android:id="@+id/tv_assigned_to_progress"
-                android:textSize="14dp"
-                android:textStyle="normal" />
-        </LinearLayout>
+                android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Assigned To:  "
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delivery Date &amp; Time:  "
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="Amit Kumar"
+                    android:id="@+id/tv_assigned_to_progress"
+                    android:textSize="14dp"
+                    android:textStyle="normal" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="12-09-2017 10-11 AM"
-                android:id="@+id/tv_date_time_progress"
-                android:textSize="14dp"
-                android:textStyle="normal" />
-        </LinearLayout>
+                android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delivery Date &amp; Time:  "
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contact:  "
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="12-09-2017 10-11 AM"
+                    android:id="@+id/tv_date_time_progress"
+                    android:textSize="14dp"
+                    android:textStyle="normal" />
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="9958808464"
-                android:id="@+id/contact_progress"
-                android:textSize="14dp"
-                android:textStyle="normal" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                android:visibility="gone"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact:  "
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="9958808464"
+                    android:id="@+id/contact_progress"
+                    android:textSize="14dp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="View On Google Maps >>>"
-                android:id="@+id/view_on_map"
-                android:layout_weight="1"
-                android:textColor="#2b5adb"
-                android:textStyle="bold" />
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="Out For Delivery"
-                android:layout_weight="1"
-                android:id="@+id/tv_status_progress"
-                android:textColor="#30be3c"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Out For Delivery"
+                    android:layout_weight="1"
+                    android:id="@+id/tv_status_progress"
+                    android:textColor="#30be3c"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
         </LinearLayout>
-
-
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#a1a1a1"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="23dp"/>
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/navigate"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/view_on_map"/>
     </LinearLayout>
 
 

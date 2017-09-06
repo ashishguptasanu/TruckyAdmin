@@ -5,13 +5,16 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/deliver_person_name"
         android:hint="Person Name"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/deliver_person_contact"
         android:hint="Person Contact"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/deliver_additional_info"
         android:hint="Additional Address Details"/>
 </LinearLayout>

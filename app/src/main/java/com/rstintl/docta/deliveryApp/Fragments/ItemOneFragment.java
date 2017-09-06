@@ -74,11 +74,13 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     TextView tvPickUp, tvDropOff, tvStartDate, tvEndDate;
     int PLACE_PICKER_REQUEST = 1;
     int PLACE_PICKER_REQUEST2 = 2;
-    String startHour, startMinute, startTimeStamp, endTimestamp;
+    String startHour, startMinute, startTimeStamp, endTimestamp, selectedVehicleType,selectedDriverID;
     Spinner vehicleType, deliveryAgent;
     List<DriverInfo> driverDetails = new ArrayList<>();
     List<String> driverData = new ArrayList<>();
     ArrayAdapter<String> agentDataAdapter;
+    String pickupLat, pickupLang, dropoffLat, dropoffLang;
+
 
     String[] vehicleTypeData = new String[]{"Select One","Motorcycle", "Light Motor Vehicle", "Heavy Truck", "Mini Bus","Heavy Bus","Fork Lift","Shovel"};
     EditText pickUp, dropOff, startDateTime, endDateTime, deliverToName, deliverToContact, deliverToAdditionalDetails;
@@ -220,6 +222,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                 String toastMsg = String.format("Place: %s", place.getName());
                 pickUp.setText(place.getAddress());
                 Toast.makeText(getContext(), toastMsg, Toast.LENGTH_LONG).show();
+                pickupLat = String.valueOf(place.getLatLng().latitude);
+                pickupLang = String.valueOf(place.getLatLng().longitude);
             }
         }else if (requestCode == PLACE_PICKER_REQUEST2) {
             if (resultCode == RESULT_OK) {
@@ -227,11 +231,13 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                 String toastMsg = String.format("Place: %s", place.getName());
                 dropOff.setText(place.getAddress());
                 Toast.makeText(getContext(), toastMsg, Toast.LENGTH_LONG).show();
+                dropoffLat = String.valueOf(place.getLatLng().latitude);
+                dropoffLang = String.valueOf(place.getLatLng().longitude);
             }
         }
     }
 
-    private String dateTimePicker(final EditText edtDate1) {
+    private void dateTimePicker(final EditText edtDate1) {
         Calendar mcurrentDate=Calendar.getInstance();
         final int mYear = mcurrentDate.get(Calendar.YEAR);
         int mMonth=mcurrentDate.get(Calendar.MONTH);
@@ -262,8 +268,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                         }
                         startHour = selectedHourFinal[0];
                         startMinute = selectedMinuteFinal[0];
-                        timeStamp[0] = String.valueOf(new SimpleDateFormat(selectedyear +"-"+selectedmonth+"-"+selectedday+"'T'"+startHour+":"+startMinute+":00'Z'"));
-                        Log.d("TimeStamp",timeStamp[0]);
+                        //timeStamp[0] = String.valueOf(new SimpleDateFormat(selectedyear +"-"+selectedmonth+"-"+selectedday+"'T'"+startHour+":"+startMinute+":00'Z'"));
+                        //Log.d("TimeStamp",timeStamp[0]);
                         edtDate1.setText((selectedyear +"-"+(selectedmonth+1)+"-"+selectedday) + " " +  startHour + ":" + startMinute);
                     }
                 }, hour, minute, false);
@@ -275,7 +281,6 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         //mDatePicker.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mDatePicker.setTitle("Select Start Date");
         mDatePicker.show();
-        return timeStamp[0];
     }
 
     @Override
@@ -316,7 +321,7 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         deliveryAgent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("Delivery Agent", String.valueOf(i));
+                selectedDriverID = driverDetails.get(i).getDriverId();
             }
 
             @Override
@@ -333,6 +338,17 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         ArrayAdapter<String> vehicleDataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, vehicleTypeData);
         vehicleDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         vehicleType.setAdapter(vehicleDataAdapter);
+        vehicleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedVehicleType = vehicleTypeData[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         return  vehicleType;
 
     }
@@ -340,6 +356,9 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     private View createDeliveryDetailsView() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         LinearLayout deliveryLayout = (LinearLayout) inflater.inflate(R.layout.delivery_details, null, false);
+        deliverToName = (EditText)deliveryLayout.findViewById(R.id.deliver_person_name);
+        deliverToContact = (EditText)deliveryLayout.findViewById(R.id.deliver_person_contact);
+        deliverToAdditionalDetails = (EditText)deliveryLayout.findViewById(R.id.deliver_additional_info);
         return deliveryLayout;
     }
 
@@ -351,7 +370,7 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         endDateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                endTimestamp = dateTimePicker(endDateTime);
+                dateTimePicker(endDateTime);
             }
         });
 
@@ -366,8 +385,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         startDateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startTimeStamp = dateTimePicker(startDateTime);
-                Log.d("Start TimeStamp", startTimeStamp);
+                dateTimePicker(startDateTime);
+                //Log.d("Start TimeStamp", startTimeStamp);
             }
         });
 
@@ -375,25 +394,6 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     }
 
     private View createDropoffAddress() {
-        pickUp = new EditText(getContext());
-        pickUp.setSingleLine(false);
-        pickUp.setHint("Select Pickup Address");
-        pickUp.setFocusable(false);
-        pickUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                try {
-                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return pickUp;
-    }
-
-    private View createPickUpAddress() {
         dropOff = new EditText(getContext());
         dropOff.setSingleLine(false);
         dropOff.setFocusable(false);
@@ -411,6 +411,26 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         });
 
         return dropOff;
+    }
+
+    private View createPickUpAddress() {
+        pickUp = new EditText(getContext());
+        pickUp.setSingleLine(false);
+        pickUp.setHint("Select Pickup Address");
+        pickUp.setFocusable(false);
+        pickUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                try {
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return pickUp;
+
     }
 
     @Override
@@ -469,12 +489,14 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                     try {
                         JSONObject jsonObject = new JSONObject(resp);
                         JSONObject jsonResponse = jsonObject.getJSONObject("Response");
-                        JSONArray dataArray = jsonResponse.getJSONArray("data");
+                        JSONObject dataObject = jsonResponse.getJSONObject("data");
+                        JSONArray dataArray = dataObject.getJSONArray("driver_list");
                         for(int i=0; i< dataArray.length();i++){
                             JSONObject jsonObject1 = dataArray.getJSONObject(i);
                             String driverName = jsonObject1.getString("driver_name");
                             String driverId = jsonObject1.getString("driver_id");
-                            DriverInfo driverInfo = new DriverInfo(driverId, driverName);
+                            String driverVehicleType = jsonObject1.getString("driver_vehicle_type");
+                            DriverInfo driverInfo = new DriverInfo(driverId, driverName, driverVehicleType);
                             driverDetails.add(driverInfo);
                         }
                         for(int k=0; k<driverDetails.size();k++){
@@ -506,11 +528,11 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("task_pickup_address", pickUp.getText().toString())
-                .addFormDataPart("task_pickup_latitude", "")
-                .addFormDataPart("task_pickup_longitude", "")
+                .addFormDataPart("task_pickup_latitude", pickupLat)
+                .addFormDataPart("task_pickup_longitude", pickupLang)
                 .addFormDataPart("task_dropoff_address", dropOff.getText().toString())
-                .addFormDataPart("task_dropoff_latitude", "")
-                .addFormDataPart("task_dropoff_longitude", "")
+                .addFormDataPart("task_dropoff_latitude", dropoffLat)
+                .addFormDataPart("task_dropoff_longitude", dropoffLang)
                 .addFormDataPart("task_start_datetime", startDateTime.getText().toString())
                 .addFormDataPart("task_start_timestamp", "")
                 .addFormDataPart("task_end_datetime", endDateTime.getText().toString())
@@ -518,8 +540,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
                 .addFormDataPart("task_delivery_person_name", deliverToName.getText().toString())
                 .addFormDataPart("task_delivery_person_contact", deliverToContact.getText().toString())
                 .addFormDataPart("task_delivery_person_address", deliverToAdditionalDetails.getText().toString())
-                .addFormDataPart("task_vehicle_type", "")
-                .addFormDataPart("task_driver_id", "")
+                .addFormDataPart("task_vehicle_type", selectedVehicleType)
+                .addFormDataPart("task_driver_id", selectedDriverID)
                 .build();
         Request request = new Request.Builder().url(getResources().getString(R.string.base_url)+"/trucky/task/assign").addHeader("token","d75542712c868c1690110db641ba01a").post(requestBody).build();
         okhttp3.Call call = client.newCall(request);

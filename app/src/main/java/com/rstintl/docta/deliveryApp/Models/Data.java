@@ -9,15 +9,16 @@ import java.util.List;
  * Created by Ashish on 06-09-2017.
  */
 
-public class Status {
+public class Data {
     @SerializedName("type")
     @Expose
     private String type;
     @SerializedName("message")
     @Expose
-
     private String message;
-
+    @SerializedName("assigned_task")
+    @Expose
+    private List<AssignedTask> assignedTask = null;
 
     public String getType() {
         return type;
@@ -33,5 +34,13 @@ public class Status {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public List<AssignedTask> getAssignedTask() {
+        return assignedTask;
+    }
+
+    public void setAssignedTask(List<AssignedTask> assignedTask) {
+        this.assignedTask = assignedTask;
     }
 }

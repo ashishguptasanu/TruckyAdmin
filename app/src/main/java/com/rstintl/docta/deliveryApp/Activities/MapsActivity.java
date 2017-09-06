@@ -97,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lang1 = getIntent().getDoubleExtra("lang1",0.0);
             lang2= getIntent().getDoubleExtra("lang2",0.0);
         }
+        Log.d("Lat_lang",lat1 + "&" + lang1 + "&" + lat2 + "&" + lang2);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
