@@ -16,9 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -28,19 +31,32 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.rstintl.docta.deliveryApp.Adapters.NewTaskAdapter;
+import com.rstintl.docta.deliveryApp.Models.DriverInfo;
 import com.rstintl.docta.deliveryApp.Models.Task;
 import com.rstintl.docta.deliveryApp.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import ernestoyaquello.com.verticalstepperform.VerticalStepperFormLayout;
 import ernestoyaquello.com.verticalstepperform.interfaces.VerticalStepperForm;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import static android.R.attr.breadCrumbShortTitle;
 import static android.R.attr.cacheColorHint;
 import static android.R.attr.name;
+import static android.R.attr.theme;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -52,11 +68,17 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     LinearLayoutManager layoutManager;
     NewTaskAdapter mAdapter;
     View view;
+    OkHttpClient client = new OkHttpClient();
     List<Task> taskList = new ArrayList<>();
     TextView tvPickUp, tvDropOff, tvStartDate, tvEndDate;
     int PLACE_PICKER_REQUEST = 1;
     int PLACE_PICKER_REQUEST2 = 2;
     String startHour, startMinute;
+    Spinner vehicleType, deliveryAgent;
+    List<DriverInfo> driverDetails = new ArrayList<>();
+    List<String> driverData = new ArrayList<>();
+    ArrayAdapter<String> agentDataAdapter;
+    String[] vehicleTypeData = new String[]{"Select One","Motorcycle", "Light Motor Vehicle", "Heavy Truck", "Mini Bus","Heavy Bus","Fork Lift","Shovel"};
     EditText pickUp, dropOff, startDateTime, endDateTime, deliverToName, deliverToContact, deliverToAdditionalDetails;
     private VerticalStepperFormLayout verticalStepperForm;
     public static ItemOneFragment newInstance() {
@@ -78,10 +100,10 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_one, container, false);
-        String[] mySteps = {"Pickup Address", "Dropoff Address", "Start Date & Time", "End Date & Time","Delivery Details"};
+        String[] mySteps = {"Pickup Address", "Dropoff Address", "Start Date & Time", "End Date & Time","Delivery Details", "Vehicle Type", "Delivery Agent"};
         int colorPrimary = ContextCompat.getColor(getContext(), R.color.colorPrimary);
         int colorPrimaryDark = ContextCompat.getColor(getContext(), R.color.colorPrimaryDark);
-
+        getDriverList();
         // Finding the view
         verticalStepperForm = (VerticalStepperFormLayout) view.findViewById(R.id.vertical_stepper_form);
 
@@ -271,9 +293,44 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
             case 4:
                 view = createDeliveryDetailsView();
                 break;
+            case 5:
+                view = createVehicleTypeStep();
+                break;
+            case 6:
+                view = createDeliveryAgentStep();
+                break;
 
         }
         return view;
+    }
+
+    private View createDeliveryAgentStep() {
+        deliveryAgent = new Spinner(getContext());
+        //vehicleType.setOnItemSelectedListener();
+        agentDataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, driverData);
+        agentDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        deliveryAgent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("Delivery Agent", String.valueOf(i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        return deliveryAgent;
+    }
+
+    private View createVehicleTypeStep() {
+        vehicleType = new Spinner(getContext());
+        //vehicleType.setOnItemSelectedListener();
+        ArrayAdapter<String> vehicleDataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, vehicleTypeData);
+        vehicleDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        vehicleType.setAdapter(vehicleDataAdapter);
+        return  vehicleType;
+
     }
 
     private View createDeliveryDetailsView() {
@@ -369,8 +426,72 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
             case 4:
                 verticalStepperForm.setActiveStepAsCompleted();
                 break;
+            case 5:
+                verticalStepperForm.setActiveStepAsCompleted();
+                break;
+            case 6:
+                verticalStepperForm.setActiveStepAsCompleted();
+                break;
 
         }
+    }
+    private void getDriverList(){
+        /*final ProgressDialog progressDialog = ProgressDialog.show(this, "Adding New Driver", "Please wait while we are adding a new profile to our database");
+        progressDialog.show();*/
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("token", "")
+                .build();
+        Request request = new Request.Builder().url(getResources().getString(R.string.base_url)+"/trucky/driver/get_driver").addHeader("token","d75542712c868c1690110db641ba01a").post(requestBody).build();
+        okhttp3.Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+
+
+            public static final String MODE_PRIVATE = "";
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Registration Error" + e.getMessage());
+                /*showToast("Failed");
+                progressDialog.dismiss();*/
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+
+                try {
+                    String resp = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(resp);
+                        JSONObject jsonResponse = jsonObject.getJSONObject("Response");
+                        JSONArray dataArray = jsonResponse.getJSONArray("data");
+                        for(int i=0; i< dataArray.length();i++){
+                            JSONObject jsonObject1 = dataArray.getJSONObject(i);
+                            String driverName = jsonObject1.getString("driver_name");
+                            String driverId = jsonObject1.getString("driver_id");
+                            DriverInfo driverInfo = new DriverInfo(driverId, driverName);
+                            driverDetails.add(driverInfo);
+                        }
+                        for(int k=0; k<driverDetails.size();k++){
+                            driverData.add(driverDetails.get(k).getDriverName());
+                        }
+                        deliveryAgent.setAdapter(agentDataAdapter);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    /*progressDialog.dismiss();
+                    showToast("Success");*/
+                    Log.d("response",resp);
+                } catch (IOException e) {
+                   /* progressDialog.dismiss();
+                    showToast("Failed");*/
+                    // Log.e(TAG_REGISTER, "Exception caught: ", e);
+                    System.out.println("Exception caught" + e.getMessage());
+                }
+            }
+
+        });
     }
 
     @Override
