@@ -62,10 +62,11 @@
         <activity
             android:name=".Activities.AllDriverActivity"
             android:label="@string/title_activity_all_driver" />
-        <activity android:name=".Activities.ViewDrivers"
+        <activity
+            android:name=".Activities.ViewDrivers"
             android:label="Drivers"
-            android:parentActivityName=".Activities.ViewDrivers">
-        </activity>
+            android:parentActivityName=".Activities.ViewDrivers"></activity>
+        <activity android:name=".Activities.AddVehicle"></activity>
     </application>
 
 </manifest>
