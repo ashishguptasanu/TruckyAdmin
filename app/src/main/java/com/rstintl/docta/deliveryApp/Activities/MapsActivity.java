@@ -4,22 +4,31 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 
 import com.cs.googlemaproute.DrawRoute;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rstintl.docta.deliveryApp.Models.DeliveryBoyModel;
+import com.rstintl.docta.deliveryApp.Models.UserFirebase;
 import com.rstintl.docta.deliveryApp.R;
 import com.google.android.gms.location.LocationListener;
 
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +40,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,10 +67,7 @@ import java.util.List;
 
 import static com.rstintl.docta.deliveryApp.R.id.map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, DrawRoute.onDrawRoute{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, DrawRoute.onDrawRoute{
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -72,10 +80,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String date;
     double lat1, lang1, lat2, lang2;
     TextView tvTimeDistance;
-    String finalDuration, finalDistance;
+    String finalDuration, finalDistance, driverId;
     DatabaseReference myRef;
     FirebaseDatabase database;
     FloatingActionButton fab;
+    List<UserFirebase>users = new ArrayList<>();
+    Marker currentLocationMarker;
+    boolean firstPass = true, zoomed = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,21 +98,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-         database = FirebaseDatabase.getInstance();
-         myRef = database.getReference("location");
-        fab = (FloatingActionButton)findViewById(R.id.fab);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("location");
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(getIntent().getExtras() != null){
-            lat1 = getIntent().getDoubleExtra("lat1",0.0);
-            lat2 = getIntent().getDoubleExtra("lat2",0.0);
-            lang1 = getIntent().getDoubleExtra("lang1",0.0);
-            lang2= getIntent().getDoubleExtra("lang2",0.0);
+        if (getIntent().getExtras() != null) {
+            lat1 = getIntent().getDoubleExtra("lat1", 0.0);
+            lat2 = getIntent().getDoubleExtra("lat2", 0.0);
+            lang1 = getIntent().getDoubleExtra("lang1", 0.0);
+            lang2 = getIntent().getDoubleExtra("lang2", 0.0);
+            driverId = getIntent().getStringExtra("driver_contact");
         }
-        Log.d("Lat_lang",lat1 + "&" + lang1 + "&" + lat2 + "&" + lang2);
+        Log.d("Lat_lang", lat1 + "&" + lang1 + "&" + lat2 + "&" + lang2);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
-        tvTimeDistance = (TextView)findViewById(R.id.tv_time_distance);
+        tvTimeDistance = (TextView) findViewById(R.id.tv_time_distance);
 
     }
 
@@ -111,21 +123,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,R.raw.style_map));
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
-                mMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.mipmap.delivery_truck);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 84, 84, false);
+        currentLocationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lang1)).title("Current Location").icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat1, lang1), 15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                UserFirebase userFirebase = dataSnapshot.getValue(UserFirebase.class);
+                //users.add(userFirebase);
+            }
 
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d("resp", s + dataSnapshot.child(driverId));
+                if(dataSnapshot.child(driverId).exists()){
+                    UserFirebase userFirebase = dataSnapshot.child(driverId).getValue(UserFirebase.class);
+                    if(mMap != null){
+                        Log.d("user",userFirebase.getName() + userFirebase.getStatus() + "&" + userFirebase.getLongitude() + " " + userFirebase.getLatitute());
+                        LatLng latLngMarker = new LatLng(userFirebase.getLatitute(), userFirebase.getLongitude());
+                        lat1 = userFirebase.getLatitute();
+                        lang1 = userFirebase.getLongitude();
+                        animateMarker(currentLocationMarker, latLngMarker, false);
+                        // Move the camera instantly to hamburg with a zoom of 15.
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngMarker, 15));
+                        zoomed = true;
+
+                        if (!zoomed) {
+
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                            zoomed = true;
+                        }
+                        // Zoom in, animating the camera.
+                    }
+                    else{
+                        Log.d("Size List", "Some`thing Went wrong");
+                    }
+                    //users.add(userFirebase);
+                }
 
             }
-        }
-        else {
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
-        }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        /*DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(lat1,lang2)
+                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).setZoomLevel((float) 15).run();*/
         /*DeliveryBoyModel deliveryBoyModel = new DeliveryBoyModel("Ashish","Assigned",28.4540583,77.0937073);
         DeliveryBoyModel deliveryBoyModel1 = new DeliveryBoyModel("Vinay","Not Assigned",28.4941690,77.6427130);
         DeliveryBoyModel deliveryBoyModel2 = new DeliveryBoyModel("Deepak","Not Assigned",28.4342510,77.3237180);
@@ -146,102 +205,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker.setTag(i);
             marker.setDraggable(true);
         }*/
-        LatLng latLngMarker = new LatLng(lat1, lang1);
-        markerOptions = new MarkerOptions();
-        markerOptions.position(latLngMarker);
-        markerOptions.title("Delivery Boy");
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.delivery_boy_final));
-        mMap.addMarker(markerOptions);
+
+        //LatLng latLngMarker = new LatLng(lat1, lat1);
 
         LatLng latLngMarker2 = new LatLng(lat2, lang2);
-        markerOptions2 = new MarkerOptions();
-        markerOptions2.position(latLngMarker2);
-        markerOptions2.title("Drop Location");
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.location));
-        mMap.addMarker(markerOptions2);
-        DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(lat1,lang1)
-                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).setZoomLevel((float) 10.0).run();
+        Marker currentLocationMarker2 = mMap.addMarker(new MarkerOptions().position(latLngMarker2).title("DropOff Location"));
+
+
 
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
 
 
-    @Override
-    public void onConnected(Bundle bundle) {
 
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            Log.d("Hi","Started");
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
 
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onLocationChanged(final Location location) {
-        Toast.makeText(getApplicationContext(), location.getLatitude()+" "+ location.getLongitude(),Toast.LENGTH_SHORT).show();
-        Log.d("latlang", String.valueOf(location.getLatitude() + location.getLongitude()));
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Log.d("Location",location.getLatitude()+" "+ location.getLongitude());
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat1, lang1)));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-            }
-        });
-
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(new LatLng(lat1,lang1));
-        builder.include(new LatLng(lat2,lang2));
-        LatLngBounds bounds = builder.build();
-
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,30);
-        mMap.animateCamera(cu, new GoogleMap.CancelableCallback(){
-            public void onCancel(){}
-            public void onFinish(){
-                CameraUpdate zout = CameraUpdateFactory.zoomBy((float) -0.0);
-                mMap.animateCamera(zout);
-            }
-        });
-        if (mGoogleApiClient != null) {
-            //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-
-    }
-    private void writeNewUser(String name, String status, double lat, double lang) {
-        DeliveryBoyModel deliveryBoy = new DeliveryBoyModel(name, status,lat,lang);
-
-        myRef.child("users").child(Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID)).setValue(deliveryBoy);
-    }
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
@@ -276,36 +253,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
-                }
-                return;
-            }
-        }
-    }
-
-    @Override
     public boolean onMarkerClick(Marker marker) {
         /*Intent intent = new Intent(getApplicationContext(),MainActivity.class);
         intent.putExtra("assigned_to",deliveryBoys.get(tag).getName());
@@ -333,6 +280,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    public void animateMarker(final Marker marker, final LatLng toPosition,
+                              final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = mMap.getProjection();
+        DrawRoute.getInstance(this,this).setFromLatLong(toPosition.latitude,toPosition.longitude)
+                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).run();
+        Point startPoint = proj.toScreenLocation(marker.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 2000;
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startLatLng.latitude;
+                marker.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } /*else {
+                    if (hideMarker) {
+                        marker.setVisible(true);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }*/
+            }
+        });
     }
 
 

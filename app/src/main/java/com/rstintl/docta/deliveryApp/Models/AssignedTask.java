@@ -65,6 +65,9 @@ public class AssignedTask {
     @SerializedName("driver_name")
     @Expose
     private String driverName;
+    @SerializedName("driver_contact")
+    @Expose
+    private String driverContact;
 
     public String getTaskId() {
         return taskId;
@@ -212,11 +215,19 @@ public class AssignedTask {
     public String getDriverName() {
         return driverName;
     }
+    public String getDriverContact() {
+        return driverContact;
+    }
+
+    public void setDriverContact(String driverContact) {
+        this.driverContact = driverContact;
+    }
+
 
     public void setDriverName(String driverName) {
         this.driverName = driverName;
     }
-    public AssignedTask(String taskId, String taskPickupAddress, double taskPickupLatitude, double taskPickupLongitude, String taskDropoffAddress, double taskDropoffLatitude, double taskDropoffLongitude, String taskStartDatetime, String taskEndDatetime, String taskStatus, String driverName){
+    public AssignedTask(String taskId, String taskPickupAddress, double taskPickupLatitude, double taskPickupLongitude, String taskDropoffAddress, double taskDropoffLatitude, double taskDropoffLongitude, String taskStartDatetime, String taskEndDatetime, String taskStatus, String driverName, String driverContact, String taskDeliveryPersonName){
         this.taskId = taskId;
         this.taskPickupAddress = taskPickupAddress;
         this.taskPickupLatitude = taskPickupLatitude;
@@ -228,6 +239,8 @@ public class AssignedTask {
         this.taskEndDatetime = taskEndDatetime;
         this.taskStatus = taskStatus;
         this.driverName = driverName;
+        this.driverContact = driverContact;
+        this.taskDeliveryPersonName = taskDeliveryPersonName;
     }
 
 }

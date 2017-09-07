@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -106,21 +107,26 @@ public class ItemTwoFragment extends Fragment {
                         JSONArray dataArray = dataObject.getJSONArray("assigned_task");
                         for(int i=0; i< dataArray.length();i++){
                             JSONObject jsonObject1 = dataArray.getJSONObject(i);
-                            String taskId = jsonObject1.getString("task_id");
-                            String taskPickupAddress = jsonObject1.getString("task_pickup_address");
-                            double taskPickupLattitude = jsonObject1.getDouble("task_pickup_latitude");
-                            double taskPickupLongitude = jsonObject1.getDouble("task_pickup_longitude");
-                            String taskDropoffAddress = jsonObject1.getString("task_dropoff_address");
-                            double taskDropoffLatitute = jsonObject1.getDouble("task_dropoff_latitude");
-                            double taskDropoffLongitude = jsonObject1.getDouble("task_dropoff_longitude");
-                            String taskStartDateTime = jsonObject1.getString("task_start_datetime");
-                            String taskEndDateTime = jsonObject1.getString("task_end_datetime");
-                            String taskStatus = jsonObject1.getString("task_status");
-                            String driverName = jsonObject1.getString("driver_name");
-                            AssignedTask assignedTask = new AssignedTask(taskId,taskPickupAddress,taskPickupLattitude,taskPickupLongitude,taskDropoffAddress, taskDropoffLatitute, taskDropoffLongitude, taskStartDateTime, taskEndDateTime, taskStatus, driverName);
-                            taskList.add(assignedTask);
+                            if(Objects.equals(jsonObject1.getString("task_status"), "1") || Objects.equals(jsonObject1.getString("task_status"), "2")){
+                                String taskId = jsonObject1.getString("task_id");
+                                String taskPickupAddress = jsonObject1.getString("task_pickup_address");
+                                double taskPickupLattitude = jsonObject1.getDouble("task_pickup_latitude");
+                                double taskPickupLongitude = jsonObject1.getDouble("task_pickup_longitude");
+                                String taskDropoffAddress = jsonObject1.getString("task_dropoff_address");
+                                double taskDropoffLatitute = jsonObject1.getDouble("task_dropoff_latitude");
+                                double taskDropoffLongitude = jsonObject1.getDouble("task_dropoff_longitude");
+                                String taskStartDateTime = jsonObject1.getString("task_start_datetime");
+                                String taskEndDateTime = jsonObject1.getString("task_end_datetime");
+                                String taskStatus = jsonObject1.getString("task_status");
+                                String driverName = jsonObject1.getString("driver_name");
+                                String driverContact = jsonObject1.getString("driver_contact");
+                                String nameDropoff =jsonObject1.getString("task_delivery_person_name");
+                                AssignedTask assignedTask = new AssignedTask(taskId,taskPickupAddress,taskPickupLattitude,taskPickupLongitude,taskDropoffAddress, taskDropoffLatitute, taskDropoffLongitude, taskStartDateTime, taskEndDateTime, taskStatus, driverName, driverContact, nameDropoff);
+                                taskList.add(assignedTask);
+                            }
+
                         }
-                        Log.d("Size List", String.valueOf(taskList.size()));
+                        //Log.d("Size List", String.valueOf(taskList.size()));
                         if(getActivity() != null){
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override

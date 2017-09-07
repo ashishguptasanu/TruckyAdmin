@@ -76,6 +76,7 @@ public class DeliveryAdapter extends RecyclerView.Adapter<DeliveryAdapter.MyView
             intent.putExtra("lat2", taskList.get(getAdapterPosition()).getTaskDropoffLatitude());
             intent.putExtra("lang1", taskList.get(getAdapterPosition()).getTaskPickupLongitude());
             intent.putExtra("lang2", taskList.get(getAdapterPosition()).getTaskDropoffLongitude());
+            intent.putExtra("driver_contact",taskList.get(getAdapterPosition()).getDriverContact());
             context.startActivity(intent);
         }
     }
