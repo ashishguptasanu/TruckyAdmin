@@ -8,10 +8,10 @@ public class UserFirebase {
     String name;
     String status;
     double latitude;
-    double logitude;
+    double longitude;
     public UserFirebase(double latitute, double longitude, String name, String status){
         this.latitude = latitute;
-        this.logitude = longitude;
+        this.longitude = longitude;
         this.name = name;
         this.status = status;
     }
@@ -37,9 +37,9 @@ public class UserFirebase {
         this.latitude = latitute;
     }
     public double getLongitude(){
-        return logitude;
+        return longitude;
     }
     public void setLongitude(double longitude){
-        this.logitude = longitude;
+        this.longitude = longitude;
     }
 }
