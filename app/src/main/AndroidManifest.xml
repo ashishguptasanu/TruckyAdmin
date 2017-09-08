@@ -65,9 +65,14 @@
         <activity
             android:name=".Activities.ViewDrivers"
             android:label="Drivers"
-            android:parentActivityName=".Activities.ViewDrivers"></activity>
-        <activity android:name=".Activities.AddVehicle"
-            android:label="Add New Vehicle"></activity>
+            android:parentActivityName=".Activities.ViewDrivers" />
+        <activity
+            android:name=".Activities.AddVehicle"
+            android:label="Add New Vehicle" />
+        <activity android:name=".Activities.ViewVehicle"
+            android:label="Inventory"
+            android:parentActivityName=".Activities.ManageActivity">
+        </activity>
     </application>
 
 </manifest>
