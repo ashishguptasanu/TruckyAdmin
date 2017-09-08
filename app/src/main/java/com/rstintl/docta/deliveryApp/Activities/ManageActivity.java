@@ -12,7 +12,7 @@ import android.view.View;
 import com.rstintl.docta.deliveryApp.R;
 
 public class ManageActivity extends AppCompatActivity implements View.OnClickListener{
-    CardView cardViewAddDriver, cardDriverView;
+    CardView cardViewAddDriver, cardDriverView, cardViewAddVehicle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +24,8 @@ public class ManageActivity extends AppCompatActivity implements View.OnClickLis
         cardViewAddDriver.setOnClickListener(this);
         cardDriverView = (CardView)findViewById(R.id.card_view_driver);
         cardDriverView.setOnClickListener(this);
+        cardViewAddVehicle = (CardView)findViewById(R.id.card_add_vehicle);
+        cardViewAddVehicle.setOnClickListener(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +46,10 @@ public class ManageActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.card_view_driver:
                 Intent intent1 = new Intent(this, ViewDrivers.class);
                 startActivity(intent1);
+                break;
+            case R.id.card_add_vehicle:
+                Intent intent2 = new Intent(this, AddVehicle.class);
+                startActivity(intent2);
                 break;
         }
     }
