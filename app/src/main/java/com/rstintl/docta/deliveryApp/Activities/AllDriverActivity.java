@@ -86,9 +86,6 @@ public class AllDriverActivity extends FragmentActivity implements OnMapReadyCal
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,R.raw.style_map));
 //        mMap.setOnMarkerClickListener(this);
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

@@ -67,7 +67,7 @@ import java.util.List;
 
 import static com.rstintl.docta.deliveryApp.R.id.map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, DrawRoute.onDrawRoute{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -155,13 +155,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Bitmap b=bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, 84, 84, false);
         currentLocationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lang1)).title("Current Location").icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat1, lang1), 15));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
+        /*mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat1, lang1), 15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);*/
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                UserFirebase userFirebase = dataSnapshot.getValue(UserFirebase.class);
-                //users.add(userFirebase);
+                if(dataSnapshot.child(driverId).exists()){
+                    UserFirebase userFirebase = dataSnapshot.child(driverId).getValue(UserFirebase.class);
+                    if(mMap != null){
+                        Log.d("user",userFirebase.getName() + userFirebase.getStatus() + "&" + userFirebase.getLongitude() + " " + userFirebase.getLatitute());
+                        LatLng latLngMarker = new LatLng(userFirebase.getLatitute(), userFirebase.getLongitude());
+                        lat1 = userFirebase.getLatitute();
+                        lang1 = userFirebase.getLongitude();
+                        animateMarker(currentLocationMarker, latLngMarker, false);
+                        // Move the camera instantly to hamburg with a zoom of 15.
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngMarker, 15));
+                        zoomed = true;
+
+                        if (!zoomed) {
+
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+                            zoomed = true;
+                        }
+                        // Zoom in, animating the camera.
+                    }
+                    else{
+                        Log.d("Size List", "Some`thing Went wrong");
+                    }
+                    //users.add(userFirebase);
+                }
             }
 
             @Override
@@ -288,7 +310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return false;
     }
 
-    @Override
+    /*@Override
     public void afterDraw(String result) {
             Log.d("Result", result);
 
@@ -300,21 +322,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             finalDuration = duration.getString("text");
             JSONObject distance = legs.getJSONObject(0).getJSONObject("distance");
             finalDistance = distance.getString("text");
-            /*JSONObject duration = legs.getJSONObject(2);
-            String mDuration = duration.getString("text");*/
+            *//*JSONObject duration = legs.getJSONObject(2);
+            String mDuration = duration.getString("text");*//*
             Log.d("Duration", finalDuration);
             tvTimeDistance.setText("("+ finalDistance + ") " + finalDuration);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
     public void animateMarker(final Marker marker, final LatLng toPosition,
                               final boolean hideMarker) {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         Projection proj = mMap.getProjection();
-        DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(toPosition.latitude,toPosition.longitude)
-                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).run();
+        /*DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(toPosition.latitude,toPosition.longitude)
+                .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).run();*/
         Point startPoint = proj.toScreenLocation(marker.getPosition());
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);
         final long duration = 2000;
