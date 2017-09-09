@@ -129,8 +129,8 @@ public class AllDriverActivity extends FragmentActivity implements OnMapReadyCal
         for(int k=0; k<users.size(); k++){
             currentLocationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(users.get(k).getLatitute(), users.get(k).getLongitude())).title(users.get(k).getName() + "(" + users.get(k).getStatus()).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(users.get(0).getLatitute(), users.get(0).getLongitude()), 7));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(7), 2000, null);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(users.get(0).getLatitute(), users.get(0).getLongitude()), 11));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11), 2000, null);
         tvOnlineDrivers.setText(users.size() + " Drivers Nearby");
     }
 

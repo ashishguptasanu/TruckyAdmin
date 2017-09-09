@@ -80,7 +80,8 @@ public class ViewDrivers extends AppCompatActivity {
                             String driverName = jsonObject1.getString("driver_name");
                             String driverId = jsonObject1.getString("driver_id");
                             String driverVehicleType = jsonObject1.getString("driver_vehicle_type");
-                            DriverInfo driverInfo = new DriverInfo(driverId, driverName, driverVehicleType);
+                            String driverDutyStatus = jsonObject1.getString("driver_duty_status");
+                            DriverInfo driverInfo = new DriverInfo(driverId, driverName, driverVehicleType, driverDutyStatus);
                             driverList.add(driverInfo);
                         }
                         for(int k=0; k<driverList.size();k++){

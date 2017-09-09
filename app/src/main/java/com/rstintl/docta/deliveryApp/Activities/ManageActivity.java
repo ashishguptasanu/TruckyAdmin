@@ -59,4 +59,9 @@ public class ManageActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+    }
 }

@@ -29,6 +29,9 @@ public class DriverInfo {
     @SerializedName("driver_area_code")
     @Expose
     private String driverAreaCode;
+    @SerializedName("driver_duty_status")
+    @Expose
+    private String driverDutyStatus;
     @SerializedName("driver_rating")
     @Expose
     private String driverRating;
@@ -107,10 +110,18 @@ public class DriverInfo {
     public void setDriverAdded(String driverAdded) {
         this.driverAdded = driverAdded;
     }
-    public DriverInfo(String driverId, String driverName, String vehicleType){
+    public String getDriverDutyStatus() {
+        return driverDutyStatus;
+    }
+
+    public void setDriverDutyStatus(String driverDutyStatus) {
+        this.driverDutyStatus = driverDutyStatus;
+    }
+    public DriverInfo(String driverId, String driverName, String vehicleType, String driverDutyStatus){
         this.driverId = driverId;
         this.driverName = driverName;
         this.driverVehicleType = vehicleType;
+        this.driverDutyStatus = driverDutyStatus;
     }
 
 }

@@ -1,8 +1,8 @@
 <resources>
     <string name="base_url">http://mshmsh.ae</string>
-    <string name="app_name">Google Maps</string>
+    <string name="app_name">Trucky Admin</string>
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_main">DashBoard</string>
+    <string name="title_activity_main">Trucky Admin</string>
     <string name="title_home">Assign Task</string>
     <string name="title_dashboard">In Progress</string>
     <string name="title_notifications">Completed</string>
