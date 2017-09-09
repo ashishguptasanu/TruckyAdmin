@@ -2,6 +2,7 @@ package com.rstintl.docta.deliveryApp.Fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.rstintl.docta.deliveryApp.Activities.MainActivity;
 import com.rstintl.docta.deliveryApp.Adapters.NewTaskAdapter;
 import com.rstintl.docta.deliveryApp.Models.DriverInfo;
 import com.rstintl.docta.deliveryApp.Models.Task;
@@ -523,8 +525,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
 
     @Override
     public void sendData() {
-        /*final ProgressDialog progressDialog = ProgressDialog.show(this, "Adding New Driver", "Please wait while we are adding a new profile to our database");
-        progressDialog.show();*/
+        final ProgressDialog progressDialog = ProgressDialog.show(getContext(), "Assigning New Task", "Please Wait, Assigning new task");
+        progressDialog.show();
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("task_pickup_address", pickUp.getText().toString())
@@ -553,8 +555,8 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
             @Override
             public void onFailure(Call call, IOException e) {
                 System.out.println("Registration Error" + e.getMessage());
-                /*showToast("Failed");
-                progressDialog.dismiss();*/
+                showToast("Failed");
+                progressDialog.dismiss();
             }
 
             @Override
@@ -562,17 +564,28 @@ public class ItemOneFragment extends Fragment implements VerticalStepperForm {
 
                 try {
                     String resp = response.body().string();
-                    /*progressDialog.dismiss();
-                    showToast("Success");*/
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    startActivity(intent);
+                    showToast("Success");
                     Log.d("response",resp);
                 } catch (IOException e) {
-                   /* progressDialog.dismiss();
-                    showToast("Failed");*/
+                   progressDialog.dismiss();
+                    showToast("Failed");
                     // Log.e(TAG_REGISTER, "Exception caught: ", e);
                     System.out.println("Exception caught" + e.getMessage());
                 }
             }
 
+        });
+
+    }
+    private void showToast(final String s){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

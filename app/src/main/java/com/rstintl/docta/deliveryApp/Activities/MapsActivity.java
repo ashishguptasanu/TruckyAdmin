@@ -101,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("location");
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (getIntent().getExtras() != null) {
             lat1 = getIntent().getDoubleExtra("lat1", 0.0);
@@ -109,6 +110,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lang2 = getIntent().getDoubleExtra("lang2", 0.0);
             driverId = getIntent().getStringExtra("driver_contact");
         }
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DrawRoute.getInstance(new DrawRoute.onDrawRoute() {
+                    @Override
+                    public void afterDraw(String result) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            JSONArray routes = jsonObject.getJSONArray("routes");
+                            JSONArray legs = routes.getJSONObject(0).getJSONArray("legs");
+                            JSONObject duration = legs.getJSONObject(0).getJSONObject("duration");
+                            finalDuration = duration.getString("text");
+                            JSONObject distance = legs.getJSONObject(0).getJSONObject("distance");
+                            finalDistance = distance.getString("text");
+            /*JSONObject duration = legs.getJSONObject(2);
+            String mDuration = duration.getString("text");*/
+                            Log.d("Duration", finalDuration);
+                            tvTimeDistance.setText("("+ finalDistance + ") " + finalDuration);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, MapsActivity.this).setFromLatLong(lat1,lang1)
+                        .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).run();
+            }
+        });
         Log.d("Lat_lang", lat1 + "&" + lang1 + "&" + lat2 + "&" + lang2);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
@@ -286,7 +313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         Projection proj = mMap.getProjection();
-        DrawRoute.getInstance(this,this).setFromLatLong(toPosition.latitude,toPosition.longitude)
+        DrawRoute.getInstance(this,MapsActivity.this).setFromLatLong(toPosition.latitude,toPosition.longitude)
                 .setToLatLong(lat2,lang2).setGmapAndKey("AIzaSyAXJL08SLtzX1hWhi_hTeBVsUQT2f49F1s",mMap).run();
         Point startPoint = proj.toScreenLocation(marker.getPosition());
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);

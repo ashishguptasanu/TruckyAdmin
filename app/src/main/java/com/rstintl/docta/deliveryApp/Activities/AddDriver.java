@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.rstintl.docta.deliveryApp.R;
@@ -25,7 +28,9 @@ import okhttp3.RequestBody;
 
 public class AddDriver extends AppCompatActivity implements VerticalStepperForm{
     VerticalStepperFormLayout verticalStepperForm;
-    EditText name, contactNumber, email, areaCode, vehicleNumber, vehicleType;
+    EditText name, contactNumber, email, areaCode, vehicleNumber;
+    Spinner vehicleType;
+    String selectedvehicleType;
     OkHttpClient client = new OkHttpClient();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +78,22 @@ public class AddDriver extends AppCompatActivity implements VerticalStepperForm{
     }
 
     private View createVehicleTypeStep() {
-        vehicleType = new EditText(this);
-        vehicleType.setHint("Vehicle Type             ");
+        vehicleType = new Spinner(this);
+        final String[] vehicleTypeData = new String[]{"Select One","Motorcycle", "Light Motor Vehicle", "Heavy Truck", "Mini Bus","Heavy Bus","Fork Lift","Shovel"};
+        ArrayAdapter<String> vehicleDataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, vehicleTypeData);
+        vehicleDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        vehicleType.setAdapter(vehicleDataAdapter);
+        vehicleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedvehicleType = vehicleTypeData[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         return vehicleType;
     }
 
@@ -148,7 +167,7 @@ public class AddDriver extends AppCompatActivity implements VerticalStepperForm{
                 .addFormDataPart("name", name.getText().toString())
                 .addFormDataPart("email", email.getText().toString())
                 .addFormDataPart("contact", contactNumber.getText().toString())
-                .addFormDataPart("vehicle_type", vehicleType.getText().toString())
+                .addFormDataPart("vehicle_type", selectedvehicleType)
                 .addFormDataPart("vehicle_no", vehicleNumber.getText().toString())
                 .addFormDataPart("area_code", areaCode.getText().toString())
                 .addFormDataPart("rating", "5")
