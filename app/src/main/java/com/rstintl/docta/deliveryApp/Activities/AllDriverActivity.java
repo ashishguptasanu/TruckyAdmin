@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,10 +36,8 @@ public class AllDriverActivity extends FragmentActivity implements OnMapReadyCal
     FirebaseDatabase database;
     List<UserFirebase> users = new ArrayList<>();
     Marker currentLocationMarker;
-    List<String> usersList = new ArrayList<>();
     TextView tvOnlineDrivers;
     FloatingActionButton fab;
-    boolean markerDraw = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +103,6 @@ public class AllDriverActivity extends FragmentActivity implements OnMapReadyCal
     private void getUpdates(DataSnapshot dataSnapshot) {
         users.clear();
         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-            Log.d("Chenged", String.valueOf(dataSnapshot1));
             UserFirebase userFirebase = new UserFirebase(Double.parseDouble(dataSnapshot1.child("latitude").getValue().toString()),Double.parseDouble(dataSnapshot1.child("longitude").getValue().toString()),dataSnapshot1.child("name").getValue().toString(),dataSnapshot1.child("status").getValue().toString());
             users.add(userFirebase);
         }
