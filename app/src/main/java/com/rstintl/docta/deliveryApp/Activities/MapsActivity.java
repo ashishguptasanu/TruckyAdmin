@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 
+import com.arsy.maps_library.MapRipple;
 import com.cs.googlemaproute.DrawRoute;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.Projection;
@@ -66,6 +68,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.rstintl.docta.deliveryApp.R.id.map;
+import static com.rstintl.docta.deliveryApp.R.id.thing_proto;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
