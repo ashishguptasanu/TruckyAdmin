@@ -345,8 +345,7 @@ public class AddVehicle extends AppCompatActivity implements VerticalStepperForm
             }
 
         });
-    }
-    private void showToast(final String s){
+    }private void showToast(final String s){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
