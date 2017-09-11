@@ -339,7 +339,6 @@ public class AddVehicle extends AppCompatActivity implements VerticalStepperForm
                 } catch (IOException e) {
                     progressDialog.dismiss();
                     showToast("Failed");
-                    // Log.e(TAG_REGISTER, "Exception caught: ", e);
                     System.out.println("Exception caught" + e.getMessage());
                 }
             }
